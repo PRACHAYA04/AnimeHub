@@ -18,6 +18,8 @@
 
 ## เส้นทางตัวอย่างที่ควรเล่าได้
 
+ฟีเจอร์ต่อยอด **แนะนำตามความสนใจ** มีแผนสาธิตประมาณ 2 นาที ตัวอย่างคำนวณคะแนน และตารางเชื่อมกับสิ่งที่เรียนใน [RECOMMENDATIONS.md](RECOMMENDATIONS.md) สามารถใช้แทนบางช่วงเดโมทั่วไปเพื่อรักษาความยาวคลิปตามกำหนด
+
 ส่งรีวิว: ReviewForm ตรวจข้อความ → Detail.saveReview → apiFetch POST + Bearer → Go Login ตรวจลายเซ็น/เวอร์ชัน token และอ่าน member จาก DB → Handler ตรวจความยาว/ID → INSERT reviews ด้วย member_id จาก token → unique/FK constraints → response 201 → โหลดรีวิวใหม่ → React แสดงผล
 
 ## ช่องสำหรับเหตุการณ์แก้ปัญหาจริง

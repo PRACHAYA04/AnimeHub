@@ -84,6 +84,7 @@ func (h *Handler) Routes() http.Handler {
 	mux.HandleFunc("DELETE /api/anime/{id}/vote", login(h.DeleteVote))
 	mux.HandleFunc("GET /api/anime/{id}/mine", login(h.Mine))
 	mux.HandleFunc("GET /api/me/wishlist", login(h.Wishlist))
+	mux.HandleFunc("GET /api/me/recommendations", login(h.Recommendations))
 	mux.HandleFunc("PUT /api/me/wishlist/{id}", login(h.AddWishlist))
 	mux.HandleFunc("DELETE /api/me/wishlist/{id}", login(h.DeleteWishlist))
 	mux.HandleFunc("GET /api/admin/stats", admin(h.Stats))

@@ -17,3 +17,4 @@ export async function apiFetch(path, { method = 'GET', body, token } = {}) {
 export const getAnime = (id) => apiFetch(`/api/anime/${id}`);
 export const getAnimeList = () => apiFetch('/api/anime').then(d => d.items);
 export const getReviews = (id) => apiFetch(`/api/anime/${id}/reviews`).then(d => d.items);
+export const getRecommendations = (token) => apiFetch('/api/me/recommendations', { token });

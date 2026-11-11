@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import Lab from './pages/Lab';
 import ThemeToggle from './components/ThemeToggle';
+import Recommendations from './pages/Recommendations';
 
 function Brand({ footer = false }) {
   return <Link to="/" className={`brand ${footer ? 'brand-footer' : ''}`} aria-label="Anime Center หน้าแรก">
@@ -40,6 +41,7 @@ function Shell() {
         <div className="nav-links">
           <NavLink end to="/" className={nav}><Icon name="compass" size={17} />ค้นพบ</NavLink>
           <NavLink to="/anime" className={nav}><Icon name="grid" size={16} />อนิเมะทั้งหมด</NavLink>
+          <NavLink to="/me/recommendations" className={nav}><Icon name="sparkle" size={17} />แนะนำสำหรับคุณ</NavLink>
           <NavLink to="/me/wishlist" className={nav}><Icon name="bookmark" size={16} />รายการอยากดู</NavLink>
           {auth.isAdmin && <NavLink to="/admin" className={nav}><Icon name="settings" size={17} />หลังบ้าน</NavLink>}
         </div>
@@ -62,6 +64,7 @@ function Shell() {
         <Route path="/register" element={<Auth key="register" register />} />
         <Route path="/profile" element={<Guard><Profile /></Guard>} />
         <Route path="/me/wishlist" element={<Guard><Catalog wishlist /></Guard>} />
+        <Route path="/me/recommendations" element={<Guard><Recommendations /></Guard>} />
         <Route path="/admin/*" element={<Guard admin><Admin /></Guard>} />
         <Route path="/lab" element={<Lab />} />
         <Route path="*" element={<div className="empty-state"><span className="not-found-number">404</span><h1 className="page-title">หลงมาอีกโลกแล้ว</h1><p className="muted my-5">ไม่พบหน้าที่คุณกำลังหา กลับไปค้นพบเรื่องใหม่กัน</p><Link className="btn" to="/">กลับหน้าแรก<Icon name="arrow" size={16} /></Link></div>} />

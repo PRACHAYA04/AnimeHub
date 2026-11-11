@@ -24,6 +24,7 @@ Response error: `{"error":{"message":"ข้อความ"}}`. 400 validation,
 | DELETE | /api/anime/{id}/vote | Member → 204 |
 | GET | /api/anime/{id}/mine | Member → `{myVote,inWishlist}` |
 | GET | /api/me/wishlist | Member → `{items:[anime...]}` ของบัญชีตัวเอง |
+| GET | /api/me/recommendations | Member → `{mode,profile,items:[anime...]}`; คำนวณเฉพาะบัญชีที่เข้าสู่ระบบ, `Cache-Control: no-store` |
 | PUT | /api/me/wishlist/{id} | Member → `{animeId}`; idempotent |
 | DELETE | /api/me/wishlist/{id} | Member → 204 |
 | GET | /api/admin/stats | Admin → aggregate stats, newestMembers, topVoted |
@@ -40,3 +41,13 @@ Anime output เพิ่ม `id` (internal PostgreSQL key), `malId` (external u
 Profile จำกัด displayName 1–50 Unicode characters และ bio <=500. Password >=8 Unicode characters และ <=72 UTF-8 bytes. Login ผิดทั้งไม่พบอีเมลและรหัสผิดใช้ข้อความเดียวกัน พร้อม dummy bcrypt comparison
 
 CORS อนุญาต origin ตรงตัวตาม ALLOWED_ORIGINS. OPTIONS ไม่ต้องแนบ token. CORS ไม่แทน authentication
+
+## Recommendations
+
+`mode` เป็น `personalized` เมื่อมีเรื่องใหม่ที่คะแนนความสนใจเป็นบวก มิฉะนั้นเป็น `popular` เพื่อเริ่มสำรวจจากคะแนน MAL โดยไม่อ้างว่าเป็นคำแนะนำเฉพาะบุคคล
+
+`profile`: `{wishlistCount,ratedCount,highRatedCount,lowRatedCount,genres:[{name,weight}]}`. แสดงแนวที่น้ำหนักสุทธิเป็นบวกสูงสุด 5 แนว; การจัดอันดับใช้ทุกแนว ไม่จำกัดเฉพาะ 5 แนวที่แสดง
+
+`items` ไม่เกิน 12 เรื่อง เพิ่มจาก anime object ด้วย `affinityScore` (คะแนนจากกติกา ไม่ใช่เปอร์เซ็นต์ความแม่นยำ), `matchedGenres` (แนวที่มีน้ำหนักบวกและตรงกับเรื่องนั้น), `reasonType` (`interest` หรือ `popular`). ไม่ส่งชื่อ/รายการส่วนตัวของสมาชิกคนอื่น ไม่มี query parameter สำหรับเลือก memberId
+
+Wishlist เพิ่มน้ำหนักแนว +1; คะแนน 8–10 เพิ่ม +3; คะแนน 1–4 ลด -2; คะแนน 5–7 เป็นกลาง. ตัดทุกเรื่องที่ผู้ใช้เก็บหรือให้คะแนนแล้ว เรียงคะแนนความสนใจ → MAL → ชื่อ → ID. เมื่อไม่มีเรื่องคะแนนความสนใจบวก จะเลือกจากเรื่องที่คะแนนความสนใจ >=0 แล้วเรียง MAL; คะแนน MAL ที่ไม่ระบุอยู่ท้ายรายการ. ดูตัวอย่างและแผนนำเสนอใน [RECOMMENDATIONS.md](RECOMMENDATIONS.md)

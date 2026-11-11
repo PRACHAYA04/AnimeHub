@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getAnimeList, apiFetch } from '../api/backend';
 import { useAuth } from '../auth/AuthContext';
 import { AnimeCard, Loading, ErrorBox, Empty } from '../components/UI';
 import Icon from '../components/Icon';
 import Poster from '../components/Poster';
+import GenreFilter, { genreIcons } from '../components/GenreFilter';
+import { genreLabels } from '../utils/genres';
 
-const genreLabels = { Action: 'แอ็กชัน', Adventure: 'ผจญภัย', Comedy: 'คอเมดี้', Drama: 'ดราม่า', Fantasy: 'แฟนตาซี', Romance: 'โรแมนซ์', Mystery: 'ลึกลับ', 'Sci-Fi': 'ไซไฟ', 'Slice of Life': 'ชีวิตประจำวัน', Sports: 'กีฬา', Supernatural: 'เหนือธรรมชาติ', Suspense: 'ระทึกขวัญ', Horror: 'สยองขวัญ' };
 const titleOf = anime => anime.titleTh || anime.title;
 
 function DiscoveryHero({ items, status }) {
@@ -37,8 +38,19 @@ export default function Catalog({ home = false, wishlist = false }) {
   const [error, setError] = useState(null);
   const [retry, setRetry] = useState(0);
   const [query, setQuery] = useState('');
-  const [genre, setGenre] = useState('');
+  const [selectedGenres, setSelectedGenres] = useState([]);
   const [sort, setSort] = useState('rating');
+  const resultsGrid = useRef(null);
+
+  useLayoutEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const cards = [...(resultsGrid.current?.children || [])];
+    const animations = cards.flatMap((card, index) => typeof card.animate === 'function' ? [card.animate(
+      [{ opacity: 0, transform: 'translateY(16px) scale(.98)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }],
+      { duration: 360, delay: Math.min(index, 9) * 28, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards' }
+    )] : []);
+    return () => animations.forEach(animation => animation.cancel());
+  }, [selectedGenres]);
 
   useEffect(() => {
     let ignore = false;
@@ -49,21 +61,47 @@ export default function Catalog({ home = false, wishlist = false }) {
     return () => { ignore = true; };
   }, [wishlist, token, retry]);
 
-  const genres = [...new Set(items.flatMap(a => a.genres || []))].sort();
-  const quickGenres = ['Action', 'Adventure', 'Fantasy', 'Romance', 'Comedy', 'Drama', 'Mystery', 'Sci-Fi'].filter(g => genres.includes(g)).slice(0, 6);
+  const genres = useMemo(() => [...new Set([
+    ...Object.keys(genreLabels),
+    ...items.flatMap(a => a.genres || []).filter(Boolean).sort(),
+  ])], [items]);
+  const genreCounts = useMemo(() => items.reduce((counts, anime) => {
+    new Set(anime.genres || []).forEach(g => { counts[g] = (counts[g] || 0) + 1; });
+    return counts;
+  }, Object.create(null)), [items]);
   const q = query.trim().toLowerCase();
-  const shown = items.filter(a => (!genre || a.genres?.includes(genre)) && (!q || `${a.title} ${a.titleTh || ''} ${a.titleJapanese || ''}`.toLowerCase().includes(q)))
+  const hasSelectedGenres = selectedGenres.length > 0;
+  const shown = items.filter(a => (!hasSelectedGenres || selectedGenres.some(genre => a.genres?.includes(genre))) && (!q || `${a.title} ${a.titleTh || ''} ${a.titleJapanese || ''}`.toLowerCase().includes(q)))
     .sort((a, b) => sort === 'name' ? a.title.localeCompare(b.title) : sort === 'year' ? (b.year || 0) - (a.year || 0) : (b.jikanScore || 0) - (a.jikanScore || 0));
 
-  function resetFilters() { setQuery(''); setGenre(''); }
+  function toggleGenre(genre) {
+    setSelectedGenres(current => !genre ? current.length ? [] : current
+      : current.includes(genre) ? current.filter(selected => selected !== genre) : [...current, genre]);
+  }
+
+  function resetFilters() { setQuery(''); setSelectedGenres([]); }
+
+  const selectedGenreNames = selectedGenres.map(genre => genreLabels[genre] || genre).join(' หรือ ');
+  const emptyGenrePhrase = `${selectedGenres.length > 1 ? 'ในแนว' : 'แนว'}${selectedGenreNames}`;
+  const emptyTitle = hasSelectedGenres ? selectedGenres.length > 1 ? 'ไม่พบอนิเมะในแนวที่เลือก' : 'ไม่พบอนิเมะแนวนี้'
+    : wishlist && !q ? 'ยังไม่มีรายการ กดเพิ่มในหน้ารายละเอียดอนิเมะได้เลย'
+    : q ? 'ไม่พบอนิเมะที่ตรงกับคำค้น' : 'ยังไม่มีอนิเมะในคอลเลกชันนี้';
+  const emptyDescription = hasSelectedGenres
+    ? q ? `ไม่พบอนิเมะ${emptyGenrePhrase}ที่ตรงกับคำค้น “${query.trim()}” ลองเปลี่ยนคำค้นหรือเลือกแนวอื่น`
+      : `ยังไม่มีอนิเมะ${emptyGenrePhrase}ใน${wishlist ? 'รายการอยากดูของคุณ' : 'คอลเลกชันนี้'} ลองเลือกแนวอื่นได้เลย`
+    : q ? `ไม่พบเรื่องที่ตรงกับ “${query.trim()}” ลองใช้คำค้นอื่น` : '';
 
   return <div className="catalog-page">
     {home && <><div className="discovery-intro"><p><span className="live-dot" />พื้นที่ของคนรักอนิเมะ</p><span>FIND YOUR NEXT OBSESSION</span></div><DiscoveryHero items={items} status={status} /><div className="discovery-promises"><span><Icon name="compass" size={16} />ค้นพบเรื่องใหม่ที่เป็นคุณ</span><span><Icon name="bookmark" size={16} />เก็บทุกเรื่องที่อยากดู</span><span><Icon name="heart" size={16} />แบ่งปันมุมมองกับคนคอเดียวกัน</span></div></>}
     <section id="catalog" className="catalog-section" aria-labelledby="catalog-title">
       <div className="catalog-heading"><div><p className="eyebrow">{wishlist ? 'SAVED FOR YOUR NEXT ESCAPE' : 'A WORLD OF STORIES'}</p>{home ? <h2 id="catalog-title" className="page-title">ค้นพบเรื่องโปรด<span className="accent">เรื่องใหม่</span></h2> : <h1 id="catalog-title" className="page-title">{wishlist ? 'รายการที่อยากดู' : 'โลกของอนิเมะ'}<span className="accent">.</span></h1>}<p className="catalog-description">{wishlist ? 'เก็บไว้ก่อน แล้วค่อยออกเดินทางไปด้วยกัน' : 'จากเรื่องที่ใคร ๆ ก็รัก ถึงเรื่องที่รอให้คุณค้นพบ'}</p></div>{status === 'success' && <span className="collection-count"><span>{items.length.toLocaleString('th-TH')}</span>เรื่องใน{wishlist ? 'รายการของคุณ' : 'คอลเลกชัน'}<Icon name="film" size={17} /></span>}</div>
-      <div className="catalog-toolbar"><div className="catalog-search"><Icon name="search" size={19} /><input aria-label="ค้นหาอนิเมะ" placeholder="วันนี้อยากดูเรื่องอะไร? ค้นหาชื่ออนิเมะ…" value={query} onChange={e => setQuery(e.target.value)} />{query && <button type="button" className="search-clear" aria-label="ล้างคำค้นหา" onClick={() => setQuery('')}><Icon name="close" size={15} /></button>}</div><div className="catalog-select"><Icon name="sliders" size={16} /><select aria-label="แนวอนิเมะ" value={genre} onChange={e => setGenre(e.target.value)}><option value="">ทุกแนวอนิเมะ</option>{genres.map(g => <option key={g} value={g}>{genreLabels[g] || g}</option>)}</select></div><div className="catalog-select sort-select"><select aria-label="เรียงลำดับ" value={sort} onChange={e => setSort(e.target.value)}><option value="rating">คะแนน MAL สูงสุด</option><option value="year">ปีใหม่ที่สุด</option><option value="name">ชื่อ A–Z</option></select></div></div>
-      <div className="catalog-filter-row"><div className="genre-chips" aria-label="เลือกแนวอย่างรวดเร็ว"><button type="button" className={`genre-chip ${!genre ? 'selected' : ''}`} aria-pressed={!genre} onClick={() => setGenre('')}><Icon name="grid" size={13} />ทั้งหมด</button>{quickGenres.map(g => <button type="button" key={g} className={`genre-chip ${genre === g ? 'selected' : ''}`} aria-pressed={genre === g} onClick={() => setGenre(g)}>{genreLabels[g] || g}</button>)}</div>{status === 'success' && <p className="results-count" role="status">{q || genre ? `พบ ${shown.length} จาก ${items.length} เรื่อง` : `${shown.length} เรื่อง พร้อมให้ค้นพบ`}</p>}</div>
-      {status === 'loading' ? <Loading /> : status === 'error' ? <ErrorBox error={error} onRetry={() => setRetry(n => n + 1)} /> : shown.length === 0 ? <Empty>{wishlist && !query && !genre ? 'ยังไม่มีรายการ กดเพิ่มในหน้ารายละเอียดอนิเมะได้เลย' : 'ไม่พบอนิเมะ ลองเปลี่ยนคำค้นหรือแนว'}{(query || genre) && <button className="btn-secondary mt-5" onClick={resetFilters}>ล้างตัวกรอง<Icon name="close" size={14} /></button>}{wishlist && !query && !genre && <Link className="btn mt-5" to="/anime">ค้นพบอนิเมะ<Icon name="arrow" size={16} /></Link>}</Empty> : <div className="anime-grid">{shown.map(a => <AnimeCard key={a.id} anime={a} />)}</div>}
+      <div className="catalog-toolbar"><div className="catalog-search"><Icon name="search" size={19} /><input aria-label="ค้นหาอนิเมะ" placeholder="วันนี้อยากดูเรื่องอะไร? ค้นหาชื่ออนิเมะ…" value={query} onChange={e => setQuery(e.target.value)} />{query && <button type="button" className="search-clear" aria-label="ล้างคำค้นหา" onClick={() => setQuery('')}><Icon name="close" size={15} /></button>}</div><div className="catalog-select sort-select"><Icon name="sliders" size={16} /><select aria-label="เรียงลำดับ" value={sort} onChange={e => setSort(e.target.value)}><option value="rating">คะแนน MAL สูงสุด</option><option value="year">ปีใหม่ที่สุด</option><option value="name">ชื่อ A–Z</option></select></div></div>
+      <div className="genre-filter-heading"><p><Icon name="film" size={16} />เลือกแนวที่อยากดู</p><span>เลือกได้หลายแนว · แสดงเรื่องที่ตรงอย่างน้อยหนึ่งแนว · กดซ้ำเพื่อยกเลิก</span></div>
+      <div className="catalog-filter-row">
+        <GenreFilter genres={genres} labels={genreLabels} counts={genreCounts} total={items.length} values={selectedGenres} onChange={toggleGenre} countsReady={status === 'success'} />
+        {status === 'success' && <p className="results-count" role="status"><span key={JSON.stringify(selectedGenres)} className="filter-result-label">{hasSelectedGenres && <><Icon name={selectedGenres.length > 1 ? 'sliders' : genreIcons[selectedGenres[0]] || 'film'} size={13} /><strong>{selectedGenres.length > 1 ? `เลือก ${selectedGenres.length} แนว` : selectedGenreNames}</strong><span className="meta-dot" /></>}{q || hasSelectedGenres ? `พบ ${shown.length} จาก ${items.length} เรื่อง` : `${shown.length} เรื่อง พร้อมให้ค้นพบ`}</span></p>}
+      </div>
+      {status === 'loading' ? <Loading /> : status === 'error' ? <ErrorBox error={error} onRetry={() => setRetry(n => n + 1)} /> : shown.length === 0 ? <Empty><p className="catalog-empty-title">{emptyTitle}</p>{emptyDescription && <p className="catalog-empty-description">{emptyDescription}</p>}{(query || hasSelectedGenres) && <button className="btn-secondary mt-5" onClick={resetFilters}>ล้างตัวกรอง<Icon name="close" size={14} /></button>}{wishlist && !query && !hasSelectedGenres && <Link className="btn mt-5" to="/anime">ค้นพบอนิเมะ<Icon name="arrow" size={16} /></Link>}</Empty> : <div ref={resultsGrid} className="anime-grid">{shown.map(a => <AnimeCard key={a.id} anime={a} />)}</div>}
     </section>
     {home && <section className="collection-banner"><span className="collection-banner-icon"><Icon name="bookmark" size={30} /></span><div><p className="eyebrow">GOOD STORIES ARE WORTH KEEPING</p><h2>เรื่องที่อยากดู ไม่ต้องจำคนเดียว<span className="accent">.</span></h2><p>สร้างลิสต์ของคุณ แล้วกลับมาเจอเรื่องโปรดได้ทุกเมื่อ</p></div><Link className="btn-secondary" to="/me/wishlist">ไปที่รายการของฉัน<Icon name="arrow" size={16} /></Link><span className="banner-decoration" aria-hidden="true">+</span></section>}
   </div>;

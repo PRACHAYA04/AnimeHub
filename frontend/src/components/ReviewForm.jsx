@@ -1,0 +1,6 @@
+import { useState } from 'react';
+export default function ReviewForm({ initialText = '', onSubmit, onCancel }) {
+ const [text, setText] = useState(initialText); const [busy, setBusy] = useState(false); const [error, setError] = useState('');
+ async function submit(e) { e.preventDefault(); if ([...text.trim()].length < 10) { setError('รีวิวต้องยาวอย่างน้อย 10 ตัวอักษร'); return; } setBusy(true); setError(''); try { await onSubmit(text.trim()); setText(''); } catch (e) { setError(e.message); } finally { setBusy(false); } }
+ return <form onSubmit={submit} className="space-y-3"><label className="block text-sm">ความคิดเห็นของคุณ<textarea className="field mt-2" value={text} onChange={e => setText(e.target.value)} maxLength={5000} rows={4} disabled={busy} placeholder="แบ่งปันความรู้สึกอย่างน้อย 10 ตัวอักษร…" /></label><p className="text-xs text-slate-500">รีวิวได้หนึ่งครั้งต่อเรื่อง และกลับมาแก้ไขได้</p>{error && <p role="alert" className="text-sm text-rose-300">{error}</p>}<div className="flex gap-3"><button className="btn" disabled={busy || !text.trim()}>{busy ? 'กำลังบันทึก…' : initialText ? 'บันทึกการแก้ไข' : 'ส่งรีวิว'}</button>{onCancel && <button type="button" className="btn-secondary" onClick={onCancel}>ยกเลิก</button>}</div></form>;
+}

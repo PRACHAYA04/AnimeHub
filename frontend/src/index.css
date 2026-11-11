@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+ body { @apply bg-slate-950 text-slate-100 antialiased; }
+ button, a, input, select, textarea { @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-400; }
+ button:disabled { @apply cursor-not-allowed opacity-50; }
+ select option { @apply bg-slate-900; }
+}
+@layer components {
+ .panel { @apply rounded-2xl border border-white/10 bg-slate-900/80 p-6; }
+ .btn { @apply inline-flex items-center justify-center rounded-xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:opacity-50; }
+ .btn-secondary { @apply inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm hover:bg-white/10; }
+ .btn-danger { @apply rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-medium hover:bg-rose-500; }
+ .field { @apply w-full rounded-xl border border-white/15 bg-slate-950 px-3 py-2.5 text-sm text-slate-100; }
+ .notice { @apply my-4 rounded-xl border p-4 text-sm; }
+ .page-title { @apply text-3xl font-bold tracking-tight sm:text-4xl; }
+ .eyebrow { @apply mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-violet-300; }
+}

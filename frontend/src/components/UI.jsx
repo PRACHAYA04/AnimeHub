@@ -1,8 +1,10 @@
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-export function Loading() { return <div className="grid gap-5 py-8 sm:grid-cols-3" aria-label="กำลังโหลด">{[1, 2, 3].map(n => <div key={n} className="h-64 animate-pulse rounded-2xl bg-neutral-200 dark:bg-white/5" />)}</div>; }
+import Icon from './Icon';
+import Poster from './Poster';
+export function Loading() { return <div className="anime-grid" role="status" aria-label="กำลังโหลด"><span className="sr-only">กำลังโหลดอนิเมะ</span>{Array.from({ length: 5 }, (_, n) => <div key={n} className="skeleton-card" aria-hidden="true"><div className="skeleton-poster" /><div className="skeleton-line" /><div className="skeleton-line short" /></div>)}</div>; }
 export function ErrorBox({ error, onRetry }) { return <div role="alert" className="notice border-red-400/30 bg-red-400/10"><p>{error?.message || error}</p>{onRetry && <button className="btn mt-3" onClick={onRetry}>ลองใหม่</button>}</div>; }
-export function Empty({ children = 'ยังไม่มีข้อมูลในรายการนี้' }) { return <div className="panel py-14 text-center text-neutral-600 dark:text-neutral-400">{children}</div>; }
+export function Empty({ children = 'ยังไม่มีข้อมูลในรายการนี้' }) { return <div className="empty-state"><span className="empty-icon"><Icon name="search" size={28} /></span><div className="muted">{children}</div></div>; }
 export function Guard({ admin = false, children }) {
   const auth = useAuth(); const location = useLocation();
   if (!auth.ready) return <Loading />;
@@ -15,5 +17,8 @@ export function ConfirmBox({ title, children, busy, onConfirm, onCancel }) {
   return <div className="fixed inset-0 z-50 grid place-items-center bg-black/75 px-4" role="dialog" aria-modal="true" aria-label={title}><div className="panel w-full max-w-md"><h2 className="text-xl font-semibold">{title}</h2><div className="my-4 text-neutral-700 dark:text-neutral-300">{children}</div><div className="flex justify-end gap-3"><button className="btn-secondary" disabled={busy} onClick={onCancel}>ยกเลิก</button><button className="btn-danger" disabled={busy} onClick={onConfirm}>{busy ? 'กำลังดำเนินการ…' : 'ยืนยัน'}</button></div></div></div>;
 }
 export function AnimeCard({ anime }) {
-  return <Link to={`/anime/${anime.id}`} className="group overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 transition hover:-translate-y-1 hover:border-red-500/60 dark:hover:border-red-500/60"><div className="relative aspect-[2/3] overflow-hidden">{anime.poster ? <img src={anime.poster} alt={anime.title} loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" /> : <div className="grid h-full place-items-center bg-red-50 dark:bg-red-950 text-5xl text-red-700 dark:text-red-400">✦</div>}<span className="absolute bottom-3 left-3 rounded-lg bg-white/95 dark:bg-neutral-950/90 px-2.5 py-1 text-xs text-red-700 dark:text-red-200">★ {anime.jikanScore ?? '—'} <span className="text-neutral-600 dark:text-neutral-400">MAL</span></span></div><div className="p-4"><p className="mb-2 text-xs text-red-700 dark:text-red-400">{anime.genre || 'ไม่ระบุแนว'} · {anime.year || 'ไม่ระบุปี'}</p><h3 className="line-clamp-2 font-semibold leading-snug">{anime.titleTh || anime.title}</h3><p className="mt-3 text-xs text-neutral-600 dark:text-neutral-400">{anime.episodes ?? '—'} ตอน · สมาชิก {anime.memberRating ?? 'ยังไม่ให้คะแนน'}</p></div></Link>;
+  return <Link to={`/anime/${anime.id}`} className="anime-card">
+    <div className="card-art"><Poster src={anime.poster} className="card-poster" /><span className="score-badge"><Icon name="star" size={12} fill="currentColor" />{anime.jikanScore ?? '—'}<span>MAL</span></span><div className="card-art-bottom"><span>{anime.episodes ? `${anime.episodes} ตอน` : 'ไม่ระบุจำนวนตอน'}</span><span className="card-open"><Icon name="arrowUpRight" size={17} /></span></div></div>
+    <div className="card-info"><p className="card-meta"><span>{anime.genres?.[0] || anime.genre || 'ไม่ระบุแนว'}</span><span className="meta-dot" />{anime.year || 'ไม่ระบุปี'}</p><h3>{anime.titleTh || anime.title}</h3><p className="card-member"><Icon name="heart" size={12} />{anime.memberRating != null ? `สมาชิกให้ ${anime.memberRating} / 10` : 'รอคะแนนจากสมาชิก'}</p></div>
+  </Link>;
 }

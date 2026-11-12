@@ -14,9 +14,9 @@ import TextSizeToggle from './components/TextSizeToggle';
 import Recommendations from './pages/Recommendations';
 
 function Brand({ footer = false }) {
-  return <Link to="/" className={`brand ${footer ? 'brand-footer' : ''}`} aria-label="AnimeCenter หน้าแรก">
+  return <Link to="/" className={`brand ${footer ? 'brand-footer' : ''}`} aria-label="AnimeHub หน้าแรก">
     <img src={`${process.env.PUBLIC_URL}/icon.svg`} width="42" height="42" alt="" />
-    <span className="brand-name">Anime<span>Center</span><small>พื้นที่ของคนรักอนิเมะ</small></span>
+    <span className="brand-name">Anime<span>Hub</span><small>พื้นที่ของคนรักอนิเมะ</small></span>
   </Link>;
 }
 
@@ -106,7 +106,7 @@ function Shell() {
     </main>
     <footer className="site-footer">
       <div className="site-container footer-top" data-reveal><div><Brand footer /><p className="footer-tagline">ทุกเรื่องราว มีคนที่รอค้นพบ</p></div><p className="footer-description">พื้นที่เล็ก ๆ สำหรับคนรักอนิเมะ<br />ค้นพบเรื่องใหม่ เก็บเรื่องโปรด แบ่งปันมุมมอง</p><div className="footer-links"><Link to="/anime">สำรวจอนิเมะ<Icon name="arrowUpRight" size={14} /></Link><Link to="/me/wishlist">รายการของฉัน<Icon name="arrowUpRight" size={14} /></Link></div></div>
-      <div className="site-container footer-bottom"><p>© {new Date().getFullYear()} AnimeCenter<span className="footer-heart">Made for anime lovers</span></p><div><a href="https://jikan.moe/" target="_blank" rel="noreferrer">ข้อมูล Jikan / MyAnimeList · ไม่ใช่บริการทางการของ MAL</a><Link to="/lab">API Lab<Icon name="arrowUpRight" size={12} /></Link></div></div>
+      <div className="site-container footer-bottom"><p>© {new Date().getFullYear()} AnimeHub<span className="footer-heart">Made for anime lovers</span></p><div><a href="https://jikan.moe/" target="_blank" rel="noreferrer">ข้อมูล Jikan / MyAnimeList · ไม่ใช่บริการทางการของ MAL</a><Link to="/lab">API Lab<Icon name="arrowUpRight" size={12} /></Link></div></div>
     </footer>
     <button type="button" className={`back-to-top ${showTop ? 'is-visible' : ''}`} onClick={backToTop} aria-label="กลับขึ้นด้านบน" title="กลับขึ้นด้านบน" tabIndex={showTop ? 0 : -1} aria-hidden={!showTop}><Icon name="arrowUp" size={20} /></button>
   </>;

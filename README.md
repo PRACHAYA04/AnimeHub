@@ -1,4 +1,4 @@
-# AnimeCenter
+# AnimeHub
 
 เว็บค้นหาอนิเมะ รีวิว คะแนน และรายการอยากดู พร้อมระบบผู้ดูแล สำหรับ Term Project BE–FE
 
@@ -53,7 +53,7 @@ docs/           API, deployment, verification and demo plan
 
 ## เริ่มใช้งานในเครื่อง (PowerShell)
 
-ติดตั้ง Go, Node/npm, Docker Desktop หรือ PostgreSQL ก่อน คำสั่งต่อไปนี้รันจากโฟลเดอร์ AnimeCenter
+ติดตั้ง Go, Node/npm, Docker Desktop หรือ PostgreSQL ก่อน คำสั่งต่อไปนี้รันจากโฟลเดอร์ AnimeHub
 
 ### 1. ฐานข้อมูล
 

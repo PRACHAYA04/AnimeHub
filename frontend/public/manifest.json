@@ -1,19 +1,19 @@
 {
-  "short_name": "AnimeCenter",
-  "name": "AnimeCenter",
+  "short_name": "AnimeHub",
+  "name": "AnimeHub",
   "icons": [
     {
-      "src": "favicon.ico?v=anime-center-monogram",
+      "src": "favicon.ico?v=animehub-monogram",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png?v=anime-center-monogram",
+      "src": "logo192.png?v=animehub-monogram",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png?v=anime-center-monogram",
+      "src": "logo512.png?v=animehub-monogram",
       "type": "image/png",
       "sizes": "512x512"
     }

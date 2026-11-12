@@ -4,7 +4,7 @@ module.exports = {
   content: ['./src/**/*.{js,jsx}'],
   theme: {
     extend: {
-      fontFamily: { sans: ['Prompt', 'system-ui', 'sans-serif'] },
+      fontFamily: { sans: ['IBM Plex Sans Thai', 'system-ui', 'sans-serif'], serif: ['Fraunces', 'Noto Serif Thai', 'Georgia', 'serif'] },
     },
   },
   plugins: [],

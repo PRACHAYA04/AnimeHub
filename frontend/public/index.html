@@ -2,8 +2,8 @@
 <html lang="th">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/icon.svg?v=anime-center-play" />
-    <link rel="alternate icon" href="%PUBLIC_URL%/favicon.ico?v=anime-center-play" />
+    <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/icon.svg?v=anime-center-monogram" />
+    <link rel="alternate icon" href="%PUBLIC_URL%/favicon.ico?v=anime-center-monogram" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#fafafa" />
     <script>
@@ -14,15 +14,19 @@
         } catch (_) {}
         document.documentElement.classList.toggle('dark', theme === 'dark');
         document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#000000' : '#fafafa');
+        try {
+          var size = localStorage.getItem('anime-center.text-size');
+          if (size === 'large' || size === 'xlarge') document.documentElement.setAttribute('data-text-size', size);
+        } catch (_) {}
       })();
     </script>
-    <meta name="description" content="Anime Center ค้นพบอนิเมะ เก็บเรื่องโปรด และแบ่งปันรีวิว" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png?v=anime-center-play" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json?v=anime-center-play" />
+    <meta name="description" content="AnimeCenter ค้นพบอนิเมะ เก็บเรื่องโปรด และแบ่งปันรีวิว" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png?v=anime-center-monogram" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json?v=anime-center-monogram" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <title>Anime Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400&family=Noto+Serif+Thai:wght@500;600;700&display=swap" rel="stylesheet" />
+    <title>AnimeCenter</title>
   </head>
   <body>
     <noscript>ต้องเปิด JavaScript เพื่อใช้งานเว็บนี้</noscript>

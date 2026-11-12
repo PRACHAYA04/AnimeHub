@@ -29,9 +29,9 @@ export default function Auth({ register = false }) {
 
   return <div className="auth-layout">
     <aside className="auth-visual">
-      <Link to="/" className="auth-brand-mark" aria-label="Anime Center หน้าแรก"><img src={`${process.env.PUBLIC_URL}/icon.svg`} width="68" height="68" alt="" /></Link>
+      <Link to="/" className="auth-brand-mark" aria-label="AnimeCenter หน้าแรก"><img src={`${process.env.PUBLIC_URL}/icon.svg`} width="68" height="68" alt="" /></Link>
       <p className="eyebrow">WELCOME TO ANIME CENTER</p>
-      <h2 className="auth-brand-title">Anime <span>Center</span></h2>
+      <h2 className="auth-brand-title">Anime<span>Center</span></h2>
       <p className="auth-brand-tagline">พื้นที่ของคนรักอนิเมะ</p>
       <p className="auth-brand-description">ค้นพบอนิเมะเรื่องใหม่ เก็บเรื่องที่อยากดู<br />และแบ่งปันมุมมองกับคนที่ชอบเหมือนกัน</p>
       <div className="auth-features"><span><Icon name="compass" size={17} />ค้นพบเรื่องใหม่</span><span><Icon name="bookmark" size={17} />เก็บเรื่องโปรด</span><span><Icon name="star" size={17} />รีวิวและให้คะแนน</span></div>
@@ -39,7 +39,7 @@ export default function Auth({ register = false }) {
     </aside>
     <div className="auth-form-side">
       <p className="eyebrow">{register ? 'เริ่มต้นเรื่องราวของคุณ' : 'ยินดีต้อนรับกลับ'}</p>
-      <h1 className="page-title">{register ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'} <span className="auth-title-brand">Anime Center</span></h1>
+      <h1 className="page-title">{register ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'} <span className="auth-title-brand">AnimeCenter</span></h1>
       <p className="auth-form-description">{register ? 'สร้างบัญชีเพื่อเก็บเรื่องโปรดและร่วมแบ่งปันรีวิวอนิเมะ' : 'เข้าสู่บัญชีของคุณ แล้วกลับไปหาอนิเมะเรื่องโปรดกัน'}</p>
       {location.state?.passwordChanged && <p role="status" className="notice">เปลี่ยนรหัสผ่านแล้ว กรุณาเข้าสู่ระบบด้วยรหัสใหม่</p>}
       <form onSubmit={submit}>

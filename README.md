@@ -4,11 +4,22 @@
 
 เพิ่มระบบแนะนำอนิเมะตามความสนใจที่ `/me/recommendations`: ใช้รายการอยากดูและคะแนนของสมาชิกจัดอันดับเรื่องใหม่ พร้อมเหตุผลที่แนะนำ คำนวณผ่าน Go/PostgreSQL และใช้ตารางเดิมได้เลย ไม่ต้องเปลี่ยน schema. วิธีคิด ตัวอย่าง และแผนสาธิตอยู่ใน [docs/RECOMMENDATIONS.md](docs/RECOMMENDATIONS.md)
 
+## ระบบที่ Deploy แล้ว
+
+| ส่วน | URL | บริการ |
+|---|---|---|
+| Frontend | https://anime-hub-bice.vercel.app | Vercel |
+| Backend API | https://animehub-lrye.onrender.com (ตรวจสถานะที่ `/api/health`) | Render |
+| Database | PostgreSQL บน Supabase (เข้าถึงผ่าน Go เท่านั้น) | Supabase |
+
+Render แผนฟรีพักเครื่องเมื่อไม่มีการใช้งาน ให้เปิด `/api/health` รอให้ตอบก่อนสาธิต
+
 ## สถานะส่งมอบ
 
 - Source code Frontend/Backend พร้อม schema และข้อมูลจริง 50 เรื่อง
 - React unit tests, Go token tests และ integration tests ที่ใช้ HTTP + PostgreSQL จริง
-- ยังไม่ได้สร้าง repository/Deploy บนบัญชี Vercel, Render หรือ Supabase ของผู้ใช้
+- Deploy แล้วบน Vercel (Frontend), Render (Backend) และ Supabase (PostgreSQL) ตามตารางด้านบน
+- GitHub Actions (`.github/workflows/test.yml`) รัน React tests + build และ Go vet/test/build พร้อม PostgreSQL จริงทุกครั้งที่ push
 - ข้อมูลตั้งต้นเป็น **สำเนาข้อมูลที่ส่งออกจาก Jikan** ผ่าน archive ที่ระบุใน `backend/data/PROVENANCE.md` ไม่ใช่การดึง Jikan สดสำเร็จในวันที่ส่งงาน เพราะ endpoint สดเชื่อมต่อไม่สำเร็จจากสภาพแวดล้อมนี้
 - มีคำสั่ง `fetch-jikan` สำหรับดึงข้อมูลสดโดยจำกัดความถี่และแคชรายวัน และหน้า `/lab` สำหรับทดลองเรียก Jikan โดยตรง
 - คะแนนเต็มขึ้นกับการประเมินจริง การ Deploy และการอธิบายของแต่ละคน ไม่รับประกันจากโค้ดอย่างเดียว
@@ -55,7 +66,7 @@ docker compose up -d
 
 ### 2. ตั้งค่า Backend และสร้างตาราง
 
-Go ไม่โหลด `.env` เอง: `.env.example` เป็นแบบฟอร์มอ้างอิง ให้ตั้ง environment จริงใน shell หรือใน Render
+Go ไม่โหลด `.env` เอง: `backend/.env.example` เป็นแบบฟอร์มอ้างอิง ให้ตั้ง environment จริงใน shell หรือใน Render
 
 ```powershell
 cd backend
@@ -134,7 +145,7 @@ go vet ./...
 go build .
 ```
 
-Integration test สร้าง schema ชั่วคราวชื่อ `animehub_test_*` แล้วลบทิ้ง ใช้ฐานข้อมูลทดสอบและ user ที่มีสิทธิ์ CREATE SCHEMA. หากไม่ตั้ง TEST_DATABASE_URL จะขึ้น SKIP ไม่ใช่ทดสอบผ่านครบ. ดูผลที่รันจริงใน `docs/VERIFICATION.md`
+Integration test สร้าง schema ชั่วคราวชื่อ `animehub_test_*` แล้วลบทิ้ง ใช้ฐานข้อมูลทดสอบและ user ที่มีสิทธิ์ CREATE SCHEMA. หากไม่ตั้ง TEST_DATABASE_URL จะขึ้น SKIP ไม่ใช่ทดสอบผ่านครบ. GitHub Actions ตั้ง PostgreSQL 16 และ TEST_DATABASE_URL ให้อัตโนมัติ ดูผลได้ที่แท็บ Actions ของ repository
 
 ## Deploy และคลิป
 

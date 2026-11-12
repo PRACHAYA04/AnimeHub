@@ -149,7 +149,7 @@ test('home ranks real catalog data and keeps discovery available during an API e
   const view = mount({ home: true });
   const rankings = screen.getByRole('complementary', { name: 'อนิเมะคะแนนสูง' });
   await screen.findAllByText('Frieren');
-  expect(rankings.querySelector('.ranking-item')).toHaveAttribute('href', '/anime/1');
+  expect(rankings.querySelector('.rail-item')).toHaveAttribute('href', '/anime/1');
   expect(view.container.querySelector('.hero-featured')).toHaveAttribute('href', '/anime/1');
   await user.click(screen.getByRole('button', { name: 'ดราม่า' }));
   expect(view.container.querySelector('.anime-grid')).not.toHaveTextContent('Frieren');

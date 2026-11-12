@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from './Icon';
 import Poster from './Poster';
@@ -28,8 +28,16 @@ export default function DiscoveryHero({ items, status, query, onQueryChange }) {
   const scored = items.filter(anime => anime.jikanScore);
   const average = scored.length ? scored.reduce((sum, anime) => sum + anime.jikanScore, 0) / scored.length : 0;
   const genreCount = new Set(items.flatMap(anime => anime.genres || [])).size;
+  const railRef = useRef(null);
   const wallPosters = ranked.filter(anime => anime.poster).slice(0, 18);
   const wallColumns = wallPosters.length >= 6 ? Array.from({ length: 6 }, (_, col) => wallPosters.filter((_, i) => i % 6 === col)) : [];
+
+  function scrollRail(direction) {
+    const rail = railRef.current;
+    if (!rail) return;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    rail.scrollBy?.({ left: direction * rail.clientWidth * 0.8, behavior: reducedMotion ? 'auto' : 'smooth' });
+  }
 
   function explore(event) {
     event.preventDefault();
@@ -54,15 +62,25 @@ export default function DiscoveryHero({ items, status, query, onQueryChange }) {
         <input aria-label="ค้นหาอนิเมะจากหน้าแรก" placeholder="ค้นหาชื่ออนิเมะ เช่น Frieren, One Piece…" value={query} onChange={event => onQueryChange(event.target.value)} />
         <button className="hero-search-submit" type="submit" aria-label="ค้นหา"><Icon name="search" size={22} /><span>ค้นหา</span></button>
       </form>
-      <aside className="hero-picks" aria-label={search ? 'ผลค้นหาเบื้องต้น' : 'อนิเมะคะแนนสูง'}>
+      <aside className={`hero-picks ${search ? '' : 'is-rail'}`} aria-label={search ? 'ผลค้นหาเบื้องต้น' : 'อนิเมะคะแนนสูง'}>
         <div className="hero-picks-heading"><h2>{search ? 'เรื่องที่ตรงกับคำค้นของคุณ' : 'เริ่มจากเรื่องที่หลายคนหลงรัก'}</h2><span>{search ? `${matches.length} เรื่อง` : 'TOP RATED'}<Icon name={search ? 'search' : 'star'} size={12} /></span></div>
-        <div className="hero-picks-grid">
-          {status === 'loading' ? [1, 2, 3, 4].map(n => <div key={n} className="ranking-skeleton" aria-hidden="true" />) : matches.slice(0, 4).map((anime, index) => <Link to={`/anime/${anime.id}`} className={`ranking-item ${index === 0 ? 'hero-featured' : ''}`} key={anime.id}>
+        {search ? <div className="hero-picks-grid">
+          {matches.slice(0, 4).map((anime, index) => <Link to={`/anime/${anime.id}`} className={`ranking-item ${index === 0 ? 'hero-featured' : ''}`} key={anime.id}>
             <Poster src={anime.poster} className="ranking-poster" />
             <div className="ranking-info"><h3>{anime.titleTh || anime.title}</h3><p className="ranking-subtitle">{anime.titleJapanese || anime.title}</p><p><Icon name="star" size={12} fill="currentColor" /><strong>{anime.jikanScore ?? '—'}</strong><span>MAL</span><span>·</span><span>{anime.year || 'ไม่ระบุปี'}</span></p></div>
             <Icon name="chevron" size={15} className="ranking-chevron" />
           </Link>)}
-        </div>
+        </div> : <div className="poster-rail-wrap">
+          <button type="button" className="poster-rail-nav is-prev" onClick={() => scrollRail(-1)} aria-label="เลื่อนไปทางซ้าย"><Icon name="arrowLeft" size={18} /></button>
+          <div className="poster-rail" ref={railRef}>
+            {status === 'loading' ? [1, 2, 3, 4, 5, 6].map(n => <div key={n} className="rail-item rail-skeleton" aria-hidden="true" />) : matches.slice(0, 12).map((anime, index) => <Link to={`/anime/${anime.id}`} className={`rail-item ${index === 0 ? 'hero-featured' : ''}`} key={anime.id} aria-label={`${anime.titleTh || anime.title} คะแนน ${anime.jikanScore ?? 'ไม่ระบุ'}`}>
+              <Poster src={anime.poster} className="rail-poster" />
+              <span className="rail-rank" aria-hidden="true">{index + 1}</span>
+              <span className="rail-info" aria-hidden="true"><strong>{anime.titleTh || anime.title}</strong><span><Icon name="star" size={11} fill="currentColor" />{anime.jikanScore ?? '—'}<em>·</em>{anime.year || 'ไม่ระบุปี'}</span></span>
+            </Link>)}
+          </div>
+          <button type="button" className="poster-rail-nav is-next" onClick={() => scrollRail(1)} aria-label="เลื่อนไปทางขวา"><Icon name="arrow" size={18} /></button>
+        </div>}
         {status === 'error' && <p className="ranking-unavailable">ยังโหลดรายการไม่ได้ ลองใหม่ได้ที่รายการด้านล่าง</p>}
         {status === 'success' && matches.length === 0 && <p className="ranking-unavailable">{search ? 'ยังไม่เจอเรื่องนี้ ลองค้นหาด้วยชื่ออื่นดูนะ' : 'ยังไม่มีอนิเมะในคลัง กลับมาค้นพบเรื่องใหม่ได้เร็ว ๆ นี้'}</p>}
         <a href="#catalog" className="btn hero-explore">เริ่มสำรวจ<Icon name="arrow" size={15} /></a>

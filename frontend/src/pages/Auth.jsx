@@ -29,16 +29,18 @@ export default function Auth({ register = false }) {
 
   return <div className="auth-layout">
     <aside className="auth-visual">
-      <span className="auth-visual-icon"><Icon name="bookmark" size={31} /></span>
-      <p className="eyebrow">EVERY STORY STARTS SOMEWHERE</p>
-      <h2>เรื่องราวดี ๆ<br />เริ่มต้นที่<span>ความชอบเดียวกัน.</span></h2>
-      <p>เก็บอนิเมะที่อยากดู ให้คะแนนเรื่องที่คุณรัก<br />แล้วแบ่งปันมุมมองกับคนคอเดียวกัน</p>
-      <span className="auth-visual-bottom">YOUR STORIES. YOUR LITTLE UNIVERSE.</span>
+      <Link to="/" className="auth-brand-mark" aria-label="Anime Center หน้าแรก"><img src={`${process.env.PUBLIC_URL}/icon.svg`} width="68" height="68" alt="" /></Link>
+      <p className="eyebrow">WELCOME TO ANIME CENTER</p>
+      <h2 className="auth-brand-title">Anime <span>Center</span></h2>
+      <p className="auth-brand-tagline">พื้นที่ของคนรักอนิเมะ</p>
+      <p className="auth-brand-description">ค้นพบอนิเมะเรื่องใหม่ เก็บเรื่องที่อยากดู<br />และแบ่งปันมุมมองกับคนที่ชอบเหมือนกัน</p>
+      <div className="auth-features"><span><Icon name="compass" size={17} />ค้นพบเรื่องใหม่</span><span><Icon name="bookmark" size={17} />เก็บเรื่องโปรด</span><span><Icon name="star" size={17} />รีวิวและให้คะแนน</span></div>
+      <span className="auth-visual-bottom">ทุกเรื่องราว มีคนที่รอค้นพบ</span>
     </aside>
     <div className="auth-form-side">
-      <p className="eyebrow">{register ? 'JOIN THE ANIME SIDE' : 'HELLO AGAIN, ANIME LOVER'}</p>
-      <h1 className="page-title">{register ? 'เข้าร่วม Anime Center' : 'ยินดีต้อนรับกลับ'}<span className="accent">.</span></h1>
-      <p className="auth-form-description">{register ? 'สร้างพื้นที่สำหรับเรื่องโปรดของคุณ' : 'เรื่องโปรดของคุณ รออยู่ที่เดิม'}</p>
+      <p className="eyebrow">{register ? 'เริ่มต้นเรื่องราวของคุณ' : 'ยินดีต้อนรับกลับ'}</p>
+      <h1 className="page-title">{register ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'} <span className="auth-title-brand">Anime Center</span></h1>
+      <p className="auth-form-description">{register ? 'สร้างบัญชีเพื่อเก็บเรื่องโปรดและร่วมแบ่งปันรีวิวอนิเมะ' : 'เข้าสู่บัญชีของคุณ แล้วกลับไปหาอนิเมะเรื่องโปรดกัน'}</p>
       {location.state?.passwordChanged && <p role="status" className="notice">เปลี่ยนรหัสผ่านแล้ว กรุณาเข้าสู่ระบบด้วยรหัสใหม่</p>}
       <form onSubmit={submit}>
         {register && <label>ชื่อที่แสดง<input required maxLength={50} autoComplete="nickname" className="field" name="displayName" placeholder="ให้เราเรียกคุณว่าอะไรดี" value={form.displayName} onChange={change} /></label>}

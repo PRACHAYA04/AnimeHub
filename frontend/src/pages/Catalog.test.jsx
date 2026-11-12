@@ -161,6 +161,33 @@ test('home ranks real catalog data and keeps discovery available during an API e
   expect(screen.getByRole('link', { name: 'เริ่มสำรวจ' })).toHaveAttribute('href', '#catalog');
 });
 
+test('home search synchronizes suggestions and catalog results without another request', async () => {
+  getAnimeList.mockResolvedValue(anime);
+  const user = userEvent.setup();
+  const view = mount({ home: true });
+  await screen.findAllByText('Frieren');
+  await user.type(screen.getByLabelText('ค้นหาอนิเมะจากหน้าแรก'), 'Monster');
+  expect(screen.getByLabelText('ค้นหาอนิเมะ')).toHaveValue('Monster');
+  expect(screen.getByRole('complementary', { name: 'ผลค้นหาเบื้องต้น' })).toHaveTextContent('Monster');
+  expect(view.container.querySelector('.anime-grid')).not.toHaveTextContent('Frieren');
+  await user.click(screen.getByRole('button', { name: 'ล้างคำค้นหา' }));
+  expect(screen.getByLabelText('ค้นหาอนิเมะจากหน้าแรก')).toHaveValue('');
+  expect(view.container.querySelector('.anime-grid')).toHaveTextContent('Frieren');
+  expect(getAnimeList).toHaveBeenCalledTimes(1);
+});
+
+test('home previews eight cards and filters search results across the complete catalog', async () => {
+  getAnimeList.mockResolvedValue(Array.from({ length: 12 }, (_, index) => ({ id: index + 1, title: `Story ${index + 1}`, genres: ['Fantasy'], jikanScore: 9 - index / 10 })));
+  const user = userEvent.setup();
+  const view = mount({ home: true });
+  await screen.findByRole('link', { name: 'ดูอนิเมะทั้งหมด 12 เรื่อง' });
+  expect(view.container.querySelectorAll('.anime-card')).toHaveLength(8);
+  expect(screen.getByRole('status')).toHaveTextContent('แสดง 8 จาก 12 เรื่อง');
+  await user.type(screen.getByLabelText('ค้นหาอนิเมะจากหน้าแรก'), 'Story 12');
+  expect(view.container.querySelectorAll('.anime-card')).toHaveLength(1);
+  expect(view.container.querySelector('.anime-grid')).toHaveTextContent('Story 12');
+});
+
 test('an empty catalog still offers clickable genres with zero counts', async () => {
   getAnimeList.mockResolvedValue([]);
   const user = userEvent.setup();

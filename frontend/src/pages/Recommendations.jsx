@@ -34,11 +34,11 @@ export default function Recommendations() {
     <header className="recommendation-hero">
       <div className="recommendation-intro">
         <p className="eyebrow">A LITTLE MORE YOU</p>
-        <h1 className="page-title">แนะนำสำหรับคุณ<span className="accent">.</span></h1>
+        <h1 className="page-title">แนะนำสำหรับคุณ</h1>
         <p className="recommendation-description">เรื่องต่อไปที่อาจกลายเป็นเรื่องโปรด<br />คัดจากแนวที่คุณสนใจและคะแนนที่คุณให้</p>
         <span className="recommendation-owner"><Icon name="user" size={14} />พื้นที่ค้นพบของ {member?.displayName || 'คุณ'}</span>
       </div>
-      <div className="recommendation-orbit" aria-hidden="true"><span /><span /><Icon name="sparkle" size={55} /><p>YOUR TASTE.<br /><strong>YOUR NEXT STORY.</strong></p></div>
+      <div className="recommendation-orbit" aria-hidden="true"><span /><span /><Icon name="sparkle" size={55} /><p>YOUR TASTE<br /><strong>YOUR NEXT STORY</strong></p></div>
       {profile && <div className="recommendation-signals" aria-label="ข้อมูลที่ใช้แนะนำ"><div><Icon name="bookmark" size={18} /><strong>{profile.wishlistCount}</strong><span>เรื่องในรายการอยากดู</span></div><div><Icon name="star" size={18} /><strong>{profile.highRatedCount}</strong><span>เรื่องที่คุณให้ 8–10 คะแนน</span></div></div>}
     </header>
 

@@ -15,7 +15,7 @@ import Recommendations from './pages/Recommendations';
 function Brand({ footer = false }) {
   return <Link to="/" className={`brand ${footer ? 'brand-footer' : ''}`} aria-label="Anime Center หน้าแรก">
     <img src={`${process.env.PUBLIC_URL}/icon.svg`} width="42" height="42" alt="" />
-    <span className="brand-name">ANIME<span>CENTER<span className="brand-dot">.</span></span></span>
+    <span className="brand-name">anime<span>center</span><small>พื้นที่ของคนรักอนิเมะ</small></span>
   </Link>;
 }
 
@@ -39,7 +39,7 @@ function Shell() {
       <nav className="site-nav site-container" aria-label="เมนูหลัก">
         <Brand />
         <div className="nav-links">
-          <NavLink end to="/" className={nav}><Icon name="compass" size={17} />ค้นพบ</NavLink>
+          <NavLink end to="/" className={nav}><Icon name="compass" size={17} />หน้าแรก</NavLink>
           <NavLink to="/anime" className={nav}><Icon name="grid" size={16} />อนิเมะทั้งหมด</NavLink>
           <NavLink to="/me/recommendations" className={nav}><Icon name="sparkle" size={17} />แนะนำสำหรับคุณ</NavLink>
           <NavLink to="/me/wishlist" className={nav}><Icon name="bookmark" size={16} />รายการอยากดู</NavLink>
@@ -55,7 +55,7 @@ function Shell() {
         </div>
       </nav>
     </header>
-    <main id="main" className="site-main site-container" tabIndex={-1}>
+    <main id="main" className={`site-main site-container ${pathname === '/' ? 'is-home' : ''}`} tabIndex={-1}>
       <Routes>
         <Route path="/" element={<Catalog home />} />
         <Route path="/anime" element={<Catalog />} />
@@ -72,7 +72,7 @@ function Shell() {
     </main>
     <footer className="site-footer">
       <div className="site-container footer-top"><div><Brand footer /><p className="footer-tagline">ทุกเรื่องราว มีคนที่รอค้นพบ</p></div><p className="footer-description">พื้นที่เล็ก ๆ สำหรับคนรักอนิเมะ<br />ค้นพบเรื่องใหม่ เก็บเรื่องโปรด แบ่งปันมุมมอง</p><div className="footer-links"><Link to="/anime">สำรวจอนิเมะ<Icon name="arrowUpRight" size={14} /></Link><Link to="/me/wishlist">รายการของฉัน<Icon name="arrowUpRight" size={14} /></Link></div></div>
-      <div className="site-container footer-bottom"><p>© {new Date().getFullYear()} Anime Center<span className="footer-heart">Made for anime lovers.</span></p><div><a href="https://jikan.moe/" target="_blank" rel="noreferrer">ข้อมูล Jikan / MyAnimeList · ไม่ใช่บริการทางการของ MAL</a><Link to="/lab">API Lab<Icon name="arrowUpRight" size={12} /></Link></div></div>
+      <div className="site-container footer-bottom"><p>© {new Date().getFullYear()} Anime Center<span className="footer-heart">Made for anime lovers</span></p><div><a href="https://jikan.moe/" target="_blank" rel="noreferrer">ข้อมูล Jikan / MyAnimeList · ไม่ใช่บริการทางการของ MAL</a><Link to="/lab">API Lab<Icon name="arrowUpRight" size={12} /></Link></div></div>
     </footer>
   </>;
 }

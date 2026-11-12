@@ -21,11 +21,11 @@ afterEach(() => {
   localStorage.clear();
 });
 
-test('keeps dark mode as the default for a new visitor', () => {
+test('uses the reference-inspired light theme for a new visitor', () => {
   render(<ThemeToggle />);
-  expect(document.documentElement).toHaveClass('dark');
-  expect(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดสว่าง' })).toBeEnabled();
-  expect(themeColor).toHaveAttribute('content', '#000000');
+  expect(document.documentElement).not.toHaveClass('dark');
+  expect(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดมืด' })).toBeEnabled();
+  expect(themeColor).toHaveAttribute('content', '#fafafa');
 });
 
 test('restores a saved light preference', () => {
@@ -39,6 +39,7 @@ test('restores a saved light preference', () => {
 
 test('switches with the keyboard and remembers the choice after remounting', async () => {
   const user = userEvent.setup();
+  localStorage.setItem(storageKey, 'dark');
   const firstMount = render(<ThemeToggle />);
   await user.tab();
   await user.keyboard('{Enter}');
@@ -59,12 +60,13 @@ test('switches modes even when browser storage is blocked', async () => {
   jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('Storage blocked'); });
   const user = userEvent.setup();
   render(<ThemeToggle />);
-  await user.click(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดสว่าง' }));
-  expect(document.documentElement).not.toHaveClass('dark');
-  expect(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดมืด' })).toBeEnabled();
+  await user.click(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดมืด' }));
+  expect(document.documentElement).toHaveClass('dark');
+  expect(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดสว่าง' })).toBeEnabled();
 });
 
 test('applies preference changes from another tab', () => {
+  localStorage.setItem(storageKey, 'dark');
   render(<ThemeToggle />);
   act(() => {
     localStorage.setItem(storageKey, 'light');
@@ -74,9 +76,9 @@ test('applies preference changes from another tab', () => {
   expect(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดมืด' })).toBeEnabled();
 });
 
-test('falls back to dark mode for an invalid saved preference', () => {
+test('falls back to light mode for an invalid saved preference', () => {
   localStorage.setItem(storageKey, 'invalid');
   render(<ThemeToggle />);
-  expect(document.documentElement).toHaveClass('dark');
-  expect(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดสว่าง' })).toBeEnabled();
+  expect(document.documentElement).not.toHaveClass('dark');
+  expect(screen.getByRole('button', { name: 'เปลี่ยนเป็นโหมดมืด' })).toBeEnabled();
 });
